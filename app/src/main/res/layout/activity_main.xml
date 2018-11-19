@@ -127,6 +127,7 @@
             android:id="@+id/pickTimeButton"
             android:layout_width="107dp"
             android:layout_height="wrap_content"
+            android:background="#20442200"
             android:layout_marginStart="0dp"
             android:layout_marginEnd="0dp"
             android:layout_weight="1"
