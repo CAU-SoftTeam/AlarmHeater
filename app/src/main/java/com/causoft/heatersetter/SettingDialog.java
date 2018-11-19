@@ -9,7 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-public class SetSettingDialog extends Dialog implements View.OnClickListener{
+public class SettingDialog extends Dialog implements View.OnClickListener{
     DialogListener dialogListener;
 
     private Context context;
@@ -20,7 +20,7 @@ public class SetSettingDialog extends Dialog implements View.OnClickListener{
     private Button cancleButton;
 
 
-    public SetSettingDialog(Context context){
+    public SettingDialog(Context context){
         super(context);
         this.context = context;
     }

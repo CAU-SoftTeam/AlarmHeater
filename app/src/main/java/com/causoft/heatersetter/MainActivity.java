@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
@@ -16,7 +17,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -37,15 +37,7 @@ public class MainActivity extends AppCompatActivity {
 
     Calendar setTime;
 
-    TextView setTimeTextView;
-    TextView inputDateTextView;
-
-    EditText ssidTextField;
-    EditText portTextField;
-
     long nowIndex;
-    String ID;
-    String dbTime;
     String repeat;
     String sort = "userid";
 
@@ -54,7 +46,6 @@ public class MainActivity extends AppCompatActivity {
     static ArrayList<String> arrayIndex =  new ArrayList<String>();
     static ArrayList<String> arrayData = new ArrayList<String>();
     private TimeDbOpenHelper mTimeDbOpenHelper;
-    private SettingDbOpenHelper mSettingDbOpenHelper;
 
     long mNow;
     Date mDate;
@@ -62,29 +53,15 @@ public class MainActivity extends AppCompatActivity {
     public String hostIP = "";
     int port = 4824;
     public String date = "abc";
-    // String inputData;
 
-    // AlarmManager myAlarmManager;
-
-
-    // private Intent alarmIntent;
-
-
-    // int requestCode = 0;
 
     SimpleDateFormat mFormat = new SimpleDateFormat("HH:mm");
-
-
-
-
     TimePickerDialog myTimePickerdialog;
 
     Button pickDateBtn;
-    Button setBtn;
-    Button resetBtn;
     Button setDeviceBtn;
-    Button wifiSettingBtn;
     CheckBox dayCheckBox[];
+    TextView inputDateTextView;
 
     private Socket socket;  //소켓생성
     ObjectOutputStream outputStream;
@@ -92,6 +69,7 @@ public class MainActivity extends AppCompatActivity {
     BufferedReader in;      //서버로부터 온 데이터를 읽는다.
     String data = "";            //
     String nowTime = "";
+    SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         dayCheckBox = new CheckBox[7];
         thisActivity = this;
 
+        pref = getSharedPreferences("IP", Activity.MODE_PRIVATE);
+        SharedPreferences.Editor editor = pref.edit();
+
         arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         ListView listView = (ListView) findViewById(R.id.db_list_view);
         listView.setAdapter(arrayAdapter);
@@ -107,12 +88,9 @@ public class MainActivity extends AppCompatActivity {
         mTimeDbOpenHelper = new TimeDbOpenHelper(this);
         mTimeDbOpenHelper.open();
         mTimeDbOpenHelper.create();
-        mSettingDbOpenHelper = new SettingDbOpenHelper(this);
-        mSettingDbOpenHelper.open();
-        mSettingDbOpenHelper.create();
+
 
         showDatabase(sort);
-        ssidTextField.setText(getIP());
 
         setDayCheckBox();
         setID();
@@ -124,31 +102,14 @@ public class MainActivity extends AppCompatActivity {
         //   myAlarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
         setTime = Calendar.getInstance();
 
-        if(!ssidTextField.getText().toString().equals("")){
-            hostIP = ssidTextField.getText().toString();
-            port = Integer.parseInt(portTextField.getText().toString());
+
+        if(pref.getString("IP",null) == null){
+            hostIP = pref.getString("IP",null);
+            port = Integer.parseInt("4824");
             InitSocket myInitSocket = new InitSocket();
             myInitSocket.start();
         }
 
-
-
-
-
-
-        //     alarmIntent = new Intent("com.causoft.heatersetter.ALARM_START");
-
-    /*    final PendingIntent myPendingIntent = PendingIntent.getBroadcast(
-                this,
-                requestCode,
-                alarmIntent,
-                PendingIntent.FLAG_UPDATE_CURRENT
-
-        );
-
-
-
-*/
         AdapterView.OnItemClickListener onListViewClickListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -190,8 +151,6 @@ public class MainActivity extends AppCompatActivity {
         };
         listView.setOnItemClickListener(onListViewClickListener);
 
-
-
         Button.OnClickListener onClickListener = new Button.OnClickListener() {
 
 
@@ -203,19 +162,20 @@ public class MainActivity extends AppCompatActivity {
                             myTimePickerdialog.show();
                             // myAlarmManager.set(AlarmManager.RTC_WAKEUP, setTime.getTimeInMillis(), myPendingIntent);
                         }
-
                         else {
                             Toast.makeText(thisActivity, "기기에 먼저 접속해 주세요.", Toast.LENGTH_LONG).show();
                         }
                         break;
                     case R.id.setDeviceButton:
-                        SetSettingDialog tempSettingDialog = new SetSettingDialog(thisActivity);
+                        SettingDialog tempSettingDialog = new SettingDialog(thisActivity);
                         tempSettingDialog.setDialogListener(new DialogListener() {
                             @Override
                             public void onPositiveClicked(String IP) {
-                                mSettingDbOpenHelper.open();
-                                mSettingDbOpenHelper.updateColumn(0,"ID"+"0",IP);
-                                ssidTextField.setText(getIP());
+                                editor.putString("IP", IP);
+                                editor.commit();
+                                hostIP = IP;
+                                InitSocket initSocket = new InitSocket();
+                                initSocket.start();
                             }
 
                             @Override
@@ -224,45 +184,23 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         tempSettingDialog.show();
-
-                    case R.id.resetButton:
-                        if (socket != null && date != null && socket.isConnected() && ! socket.isClosed()) {
-                            mTimeDbOpenHelper.deleteAllColumns();
-                            showDatabase(sort);
-                            Toast.makeText(thisActivity, "삭제완료.", Toast.LENGTH_SHORT).show();
-                        }
-                        else {
-                            Toast.makeText(thisActivity, "기기에 먼저 접속해 주세요.", Toast.LENGTH_LONG).show();
-                        }
-                        break;
-                    case R.id.wifiSettingButton:
-                        if (socket!= null && socket.isConnected() && ! socket.isClosed()) {
-                            outThread outT = new outThread("setting");
-                            outT.start();
-                            Toast.makeText(thisActivity, "와이파이 설정이 선택되었습니다.", Toast.LENGTH_LONG).show();
-                        } else {
-                            Toast.makeText(thisActivity, "기기에 먼저 접속해 주세요.", Toast.LENGTH_LONG).show();
-                        }
                 }
             }
 
         };
-
-        setButtonListener(onClickListener);
+        setAllButtonListener(onClickListener);
     }
 
-    private void setButtonListener(Button.OnClickListener onClickListener) {
+    private void setAllButtonListener(Button.OnClickListener onClickListener) {
         pickDateBtn.setOnClickListener(onClickListener);
-        setBtn.setOnClickListener(onClickListener);
-        resetBtn.setOnClickListener(onClickListener);
         setDeviceBtn.setOnClickListener(onClickListener);
-        wifiSettingBtn.setOnClickListener(onClickListener);
     }
 
     public void showDatabase(String sort){
         Cursor iCursor = mTimeDbOpenHelper.sortColumn(sort);
         arrayData.clear();
         arrayIndex.clear();
+        String temp = "";
         while(iCursor.moveToNext()){
             String tempIndex = iCursor.getString(iCursor.getColumnIndex("_id"));
             String tempID = iCursor.getString(iCursor.getColumnIndex("userid"));
@@ -270,8 +208,33 @@ public class MainActivity extends AppCompatActivity {
             String tempTime = iCursor.getString(iCursor.getColumnIndex("time"));
             tempTime = setTextLength(tempTime,15);
             String tempRepeat = iCursor.getString(iCursor.getColumnIndex("repeat"));
-            tempRepeat = setTextLength(tempRepeat,15);
+            for(int i = 0; i < tempRepeat.length(); i++){
+                switch (tempRepeat.charAt(i)){
+                    case '0':
+                        temp += "Mon ";
+                        break;
+                    case '1':
+                        temp += "Tue ";
+                        break;
+                    case '2':
+                        temp += "Wed ";
+                        break;
+                    case '3':
+                        temp += "Thu ";
+                        break;
+                    case '4':
+                        temp += "Fri ";
+                        break;
+                    case '5':
+                        temp += "Sat ";
+                        break;
+                    case '6':
+                        temp += "Sun ";
+                        break;
 
+                }
+            }
+            tempRepeat = setTextLength(temp,20);
             String Result = tempID+ tempTime + tempRepeat;
             arrayData.add(Result);
             arrayIndex.add(tempIndex);
@@ -336,19 +299,8 @@ public class MainActivity extends AppCompatActivity {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
             try {
                 while (true) {
-                    /*
-                    if(!(socket!= null && socket.isConnected() && ! socket.isClosed())){
-                        thisActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(thisActivity, "연결이 끊어졌습니다.", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                    }
-                    */
                     data = in.readLine();
                     inputDateTextView.post(new Runnable() {
                         public void run() {
@@ -380,16 +332,13 @@ public class MainActivity extends AppCompatActivity {
             setTime.set(Calendar.HOUR_OF_DAY, hour);
             setTime.set(Calendar.MINUTE, minute);
             setTime.set(Calendar.SECOND, 0);
-
             String hourString = hour < 10 ? ("0") + String.valueOf(hour) : String.valueOf(hour);
             String minuteString = minute < 10 ? ("0") + String.valueOf(minute) : String.valueOf(minute);
-
             date = hourString + ":" + minuteString;
-            setTimeTextView.setText(date);
             mTimeDbOpenHelper.open();
-            mTimeDbOpenHelper.insertColumn("ID"+setTimeTextView.getText().toString(), setTimeTextView.getText().toString(), checkedDay());
+            mTimeDbOpenHelper.insertColumn("ID"+date, date, checkedDay());
             showDatabase(sort);
-            outThread outT = new outThread(setTimeTextView.getText() + "#" + checkedDay()+"a");
+            outThread outT = new outThread(date + "#" + checkedDay()+"a");
             outT.start();
         }
     };
@@ -403,28 +352,11 @@ public class MainActivity extends AppCompatActivity {
         }
         return returnString;
     }
-    public String getIP(){
-        String tempIP = "";
-        Cursor iCursor = mSettingDbOpenHelper.getSetting();
-        while(iCursor.moveToNext()){
-            tempIP = iCursor.getString(iCursor.getColumnIndex("ip"));
-        }
-        return tempIP;
-
-    }
 
     private void setID() {
         pickDateBtn = (Button) findViewById(R.id.pickTimeButton);
-        setBtn = (Button) findViewById(R.id.setButton);
-        resetBtn = (Button) findViewById(R.id.resetButton);
         setDeviceBtn = (Button) findViewById(R.id.setDeviceButton);
-        wifiSettingBtn = (Button) findViewById(R.id.wifiSettingButton);
-
-        setTimeTextView = (TextView)findViewById(R.id.dateTextView);
         inputDateTextView = (TextView)findViewById(R.id.inputDateTextView);
-
-        ssidTextField = (EditText)findViewById(R.id.ssidEditText);
-        portTextField = (EditText)findViewById(R.id.portEditTExt);
     }
 
     private void setDayCheckBox() {

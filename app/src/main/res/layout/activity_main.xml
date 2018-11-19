@@ -6,238 +6,191 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/linearLayout3"
+    <EditText
+        android:id="@+id/ssidEditText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="295dp"
-        android:layout_marginTop="10dp"
+        android:ems="10"
+        android:inputType="textPersonName"
+        android:text="Name"
+        android:visibility="gone" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="417dp"
+        android:layout_height="50dp"
         android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        android:background="#400000ff"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="357dp"
+            android:layout_height="match_parent"
+            android:text="AlarmHeater"
+            android:textSize="40sp"
+            tools:layout_editor_absoluteX="8dp"
+            tools:layout_editor_absoluteY="16dp" />
+
+        <Button
+            android:id="@+id/setDeviceButton"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:gravity="top|center_vertical|center_horizontal|center"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:background="#100000ff"
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="128dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="3dp"
+        android:layout_marginBottom="10dp"
+        android:gravity="end"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toTopOf="@+id/LinearLayout3"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout">
 
-        <CheckBox
-            android:id="@+id/mondayCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Mon" />
-
-        <CheckBox
-            android:id="@+id/tuesdayCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Tue" />
-
-        <CheckBox
-            android:id="@+id/wednesdayCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Wed" />
-
-        <CheckBox
-            android:id="@+id/thursdayCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Thu" />
-
-        <CheckBox
-            android:id="@+id/fridayCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Fri" />
-
-        <CheckBox
-            android:id="@+id/saturdayCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sat" />
-
-        <CheckBox
-            android:id="@+id/sundayCheckBox"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="Sun" />
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="56dp"
-        android:layout_marginBottom="50dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="30dp"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        <TextView
+            android:id="@+id/textView2"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:background="#400000ff"
+            android:text="알람추가"
+            android:textSize="20sp" />
 
         <LinearLayout
+            android:id="@+id/linearLayout3"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:orientation="vertical">
+            android:layout_height="32dp"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal"
+            app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.19">
 
-            <TextView
-                android:id="@+id/dateTextView"
-                android:layout_width="match_parent"
+            <CheckBox
+                android:id="@+id/mondayCheckBox"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:text="Mon" />
 
-            <TextView
-                android:id="@+id/inputDateTextView"
-                android:layout_width="match_parent"
+            <CheckBox
+                android:id="@+id/tuesdayCheckBox"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:layout_marginStart="10dp"
                 android:layout_weight="1"
-                android:text="TextView" />
+                android:text="Tue" />
+
+            <CheckBox
+                android:id="@+id/wednesdayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Wed" />
+
+            <CheckBox
+                android:id="@+id/thursdayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Thu" />
+
+            <CheckBox
+                android:id="@+id/fridayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Fri" />
+
+            <CheckBox
+                android:id="@+id/saturdayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sat" />
+
+            <CheckBox
+                android:id="@+id/sundayCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Sun" />
 
         </LinearLayout>
 
         <Button
-            android:id="@+id/setDeviceButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:text="장치설정" />
-
-        <Button
-            android:id="@+id/wifiSettingButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:text="와이파이 설정" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/linearLayout2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="50dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="293dp"
-        android:layout_weight="1"
-        android:gravity="center_horizontal"
-        android:orientation="horizontal"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
-
-        <Button
-            android:id="@+id/resetButton"
-            android:layout_width="100dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:text="삭제" />
-
-        <Button
             android:id="@+id/pickTimeButton"
-            android:layout_width="wrap_content"
+            android:layout_width="107dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
+            android:layout_marginStart="0dp"
+            android:layout_marginEnd="0dp"
             android:layout_weight="1"
-            android:text="날짜추가" />
-
-        <Button
-            android:id="@+id/setButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="left"
-            android:layout_marginEnd="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_weight="1"
-            android:text="set" />
+            android:text="시간선택" />
 
     </LinearLayout>
-
-    <EditText
-        android:id="@+id/ssidEditText"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginStart="30dp"
-        android:layout_marginTop="3dp"
-        android:ems="10"
-        android:hint="HostIP"
-        android:inputType="textPersonName"
-        android:text="192.168.0.7"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <EditText
-        android:id="@+id/portEditTExt"
-        android:layout_width="160dp"
-        android:layout_height="40dp"
-        android:layout_marginBottom="16dp"
-        android:layout_marginEnd="30dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="3dp"
-        android:focusableInTouchMode="false"
-        android:ems="10"
-        android:hint="Port"
-
-        android:inputType="number"
-        android:text="4824"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/ssidEditText"
-        app:layout_constraintTop_toTopOf="parent" />
 
     <LinearLayout
         android:id="@+id/LinearLayout3"
-        android:layout_width="395dp"
-        android:layout_height="294dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_width="409dp"
+        android:layout_height="332dp"
+        android:layout_marginStart="3dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="3dp"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/linearLayout3">
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="match_parent"
+            android:layout_height="37dp"
+            android:background="#400000ff"
+            android:text="현재 알람"
+            android:textSize="20sp" />
+
         <ScrollView
             android:id="@+id/scroll_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:fillViewport="true"
-            android:layout_weight="1">
+            android:background="#100000ff"
+            android:layout_weight="1"
+            android:fillViewport="true">
+
             <ListView
                 android:id="@+id/db_list_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                >
-            </ListView>
+                android:layout_height="wrap_content"
+                tools:layout_editor_absoluteX="8dp"
+                tools:layout_editor_absoluteY="236dp">
 
+            </ListView>
         </ScrollView>
+
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/inputDateTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="TextView"
+        android:visibility="gone"
+        tools:layout_editor_absoluteX="208dp"
+        tools:layout_editor_absoluteY="63dp" />
 
 
 </android.support.constraint.ConstraintLayout>
