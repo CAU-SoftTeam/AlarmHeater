@@ -62,6 +62,7 @@ public class MainActivity extends AppCompatActivity {
     Button setDeviceBtn;
     CheckBox dayCheckBox[];
     TextView inputDateTextView;
+    TextView AlarmTextView;
 
     private Socket socket;  //소켓생성
     ObjectOutputStream outputStream;
@@ -89,6 +90,8 @@ public class MainActivity extends AppCompatActivity {
         mTimeDbOpenHelper.open();
         mTimeDbOpenHelper.create();
 
+        AlarmTextView = findViewById(R.id.textView);
+
 
         showDatabase(sort);
 
@@ -103,9 +106,10 @@ public class MainActivity extends AppCompatActivity {
         setTime = Calendar.getInstance();
 
 
-        if(pref.getString("IP",null) == null){
+        if(pref.getString("IP",null) != null){
             hostIP = pref.getString("IP",null);
             port = Integer.parseInt("4824");
+            AlarmTextView.setText(hostIP);
             InitSocket myInitSocket = new InitSocket();
             myInitSocket.start();
         }
@@ -208,30 +212,32 @@ public class MainActivity extends AppCompatActivity {
             String tempTime = iCursor.getString(iCursor.getColumnIndex("time"));
             tempTime = setTextLength(tempTime,15);
             String tempRepeat = iCursor.getString(iCursor.getColumnIndex("repeat"));
+            temp = "";
             for(int i = 0; i < tempRepeat.length(); i++){
                 switch (tempRepeat.charAt(i)){
-                    case '0':
+                    case '1':
                         temp += "Mon ";
                         break;
-                    case '1':
+                    case '2':
                         temp += "Tue ";
                         break;
-                    case '2':
+                    case '3':
                         temp += "Wed ";
                         break;
-                    case '3':
+                    case '4':
                         temp += "Thu ";
                         break;
-                    case '4':
+                    case '5':
                         temp += "Fri ";
                         break;
-                    case '5':
+                    case '6':
                         temp += "Sat ";
                         break;
-                    case '6':
+                    case '7':
                         temp += "Sun ";
                         break;
-
+                    default:
+                        temp+= "err";
                 }
             }
             tempRepeat = setTextLength(temp,20);
@@ -253,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
         }
         return text;
     }
+
     class outThread extends Thread{
         String output;
         outThread(String input){
@@ -314,7 +321,6 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-
     @Override
     protected void onStop() {  //앱 종료시
         super.onStop();
@@ -347,7 +353,7 @@ public class MainActivity extends AppCompatActivity {
         String returnString = "";
         for(int i = 0; i < 7; i++){
             if(dayCheckBox[i].isChecked()){
-                returnString += String.valueOf(i);
+                returnString += String.valueOf(i+1);
             }
         }
         return returnString;
