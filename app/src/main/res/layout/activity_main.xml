@@ -17,20 +17,33 @@
 
     <LinearLayout
         android:id="@+id/linearLayout"
-        android:layout_width="417dp"
+        android:layout_width="0dp"
         android:layout_height="50dp"
-        android:orientation="horizontal"
+        android:layout_marginBottom="1dp"
         android:background="#400000ff"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/Loginswitch"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <TextView
             android:id="@+id/textView"
-            android:layout_width="357dp"
+            android:layout_width="300dp"
             android:layout_height="match_parent"
             android:text="AlarmHeater"
             android:textSize="40sp"
             tools:layout_editor_absoluteX="8dp"
             tools:layout_editor_absoluteY="16dp" />
+
+        <Button
+            android:id="@+id/loginButton"
+            android:layout_width="40dp"
+            android:layout_height="match_parent"
+            android:layout_margin="0dp"
+            android:layout_weight="1"
+            android:gravity="top|center_vertical|center_horizontal|center"
+            android:textSize="20sp" />
 
         <Button
             android:id="@+id/setDeviceButton"
@@ -143,11 +156,9 @@
 
     <LinearLayout
         android:id="@+id/LinearLayout3"
-        android:layout_width="409dp"
-        android:layout_height="332dp"
-        android:layout_marginStart="3dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginTop="5dp"
-        android:layout_marginEnd="3dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -167,8 +178,8 @@
             android:id="@+id/scroll_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="#100000ff"
             android:layout_weight="1"
+            android:background="#100000ff"
             android:fillViewport="true">
 
             <ListView
@@ -184,13 +195,24 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/inputDateTextView"
+        android:id="@+id/inputDataTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="TextView"
         android:visibility="gone"
         tools:layout_editor_absoluteX="208dp"
         tools:layout_editor_absoluteY="63dp" />
+
+    <Switch
+        android:id="@+id/Loginswitch"
+        android:layout_width="404dp"
+        android:layout_height="31dp"
+        android:text="IOT"
+        android:visibility="invisible"
+        app:layout_constraintBottom_toTopOf="@+id/linearLayout2"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout" />
 
 
 </android.support.constraint.ConstraintLayout>

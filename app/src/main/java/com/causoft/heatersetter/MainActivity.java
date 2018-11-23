@@ -9,6 +9,8 @@ import android.database.Cursor;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.Calendar;
 import android.os.Build;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -17,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -60,8 +63,9 @@ public class MainActivity extends AppCompatActivity {
 
     Button pickDateBtn;
     Button setDeviceBtn;
+    Button loginBtn;
     CheckBox dayCheckBox[];
-    TextView inputDateTextView;
+    TextView inputDataTextView;
     TextView AlarmTextView;
 
     private Socket socket;  //소켓생성
@@ -71,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     String data = "";            //
     String nowTime = "";
     SharedPreferences pref;
+    String arduinoMacAddr = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,7 +95,7 @@ public class MainActivity extends AppCompatActivity {
         mTimeDbOpenHelper.open();
         mTimeDbOpenHelper.create();
 
-        AlarmTextView = findViewById(R.id.textView);
+        AlarmTextView = findViewById(R.id.textView2);
 
 
         showDatabase(sort);
@@ -109,7 +114,6 @@ public class MainActivity extends AppCompatActivity {
         if(pref.getString("IP",null) != null){
             hostIP = pref.getString("IP",null);
             port = Integer.parseInt("4824");
-            AlarmTextView.setText(hostIP);
             InitSocket myInitSocket = new InitSocket();
             myInitSocket.start();
         }
@@ -170,9 +174,25 @@ public class MainActivity extends AppCompatActivity {
                             Toast.makeText(thisActivity, "기기에 먼저 접속해 주세요.", Toast.LENGTH_LONG).show();
                         }
                         break;
+                    case R.id.loginButton:
+                        LoginDialog myLoginDialog = new LoginDialog(thisActivity, arduinoMacAddr, handler, AlarmTextView);
+                        myLoginDialog.setLoginDialogListener(new LoginDialogListener(){
+                            @Override
+                            public void onPositiveClicked(String id, String pw) {
+                                Toast.makeText(thisActivity, "로그인 성공!", Toast.LENGTH_LONG).show();
+                                editor.putString("ID", id);
+                                editor.putString("PW", pw);
+                            }
+                            @Override
+                            public void onNegativeClicked() {
+
+                            }
+                        });
+                        myLoginDialog.show();
+                        break;
                     case R.id.setDeviceButton:
-                        SettingDialog tempSettingDialog = new SettingDialog(thisActivity);
-                        tempSettingDialog.setDialogListener(new DialogListener() {
+                        SettingDialog tempSettingDialog = new SettingDialog(thisActivity,hostIP);
+                        tempSettingDialog.setSettingDialogListener(new SettingDialogListener() {
                             @Override
                             public void onPositiveClicked(String IP) {
                                 editor.putString("IP", IP);
@@ -188,16 +208,12 @@ public class MainActivity extends AppCompatActivity {
                             }
                         });
                         tempSettingDialog.show();
+                        break;
                 }
             }
 
         };
         setAllButtonListener(onClickListener);
-    }
-
-    private void setAllButtonListener(Button.OnClickListener onClickListener) {
-        pickDateBtn.setOnClickListener(onClickListener);
-        setDeviceBtn.setOnClickListener(onClickListener);
     }
 
     public void showDatabase(String sort){
@@ -260,72 +276,13 @@ public class MainActivity extends AppCompatActivity {
         return text;
     }
 
-    class outThread extends Thread{
-        String output;
-        outThread(String input){
-            output = input;
-        }
-
-        public void run(){
-            if(socket.isConnected()){
-                    out.write(output);
-                    out.flush();
-            }
-
-        }
-    }
-
-    class InitSocket extends Thread {
-        public void run() {
-            try {
-                    if(socket != null){
-                        socket.close(); //소켓을 닫는다.
-                    }
-                    socket = new Socket(hostIP, port); //소켓생성
-                    if(socket.isConnected() && ! socket.isClosed()){
-                        thisActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(thisActivity, "서버와 연결되었습니다.", Toast.LENGTH_LONG).show();
-                            }
-                        });
-                        outputStream = new ObjectOutputStream(socket.getOutputStream());
-                        out = new PrintWriter(outputStream);//전송한다.
-                        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-                    }
-                    else{
-                        thisActivity.runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                Toast.makeText(thisActivity, "연결에 실패하였습니다.", Toast.LENGTH_LONG).show();
-                            }
-                        });
-
-                    }
-                 //데이터 수신시 stream을 받아들인다.
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
-                while (true) {
-                    data = in.readLine();
-                    inputDateTextView.post(new Runnable() {
-                        public void run() {
-                            inputDateTextView.setText(data);
-                        }
-                    });
-                }
-            } catch (Exception e) {
-            }
-
-        }
-    }
-
     @Override
     protected void onStop() {  //앱 종료시
         super.onStop();
         try {
-            socket.close(); //소켓을 닫는다.
+            if (socket.isConnected() && !socket.isClosed()) {
+                socket.close();
+            }//소켓을 닫는다.
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -362,7 +319,8 @@ public class MainActivity extends AppCompatActivity {
     private void setID() {
         pickDateBtn = (Button) findViewById(R.id.pickTimeButton);
         setDeviceBtn = (Button) findViewById(R.id.setDeviceButton);
-        inputDateTextView = (TextView)findViewById(R.id.inputDateTextView);
+        loginBtn = (Button) findViewById(R.id.loginButton);
+        inputDataTextView = (TextView)findViewById(R.id.inputDataTextView);
     }
 
     private void setDayCheckBox() {
@@ -375,6 +333,77 @@ public class MainActivity extends AppCompatActivity {
         dayCheckBox[6] = (CheckBox)findViewById(R.id.sundayCheckBox);
     }
 
+    private void setAllButtonListener(Button.OnClickListener onClickListener) {
+        pickDateBtn.setOnClickListener(onClickListener);
+        setDeviceBtn.setOnClickListener(onClickListener);
+        loginBtn.setOnClickListener(onClickListener);
+    }
+
+    class outThread extends Thread{
+        String output;
+        outThread(String input){
+            output = input;
+        }
+
+        public void run(){
+            if(socket.isConnected()){
+                out.write(output);
+                out.flush();
+            }
+
+        }
+    }
+
+    class InitSocket extends Thread {
+        public void run() {
+            try {
+                if(socket != null){
+                    socket.close(); //소켓을 닫는다.
+                }
+                while(socket == null || !(socket.isConnected() && !socket.isClosed())) {
+                    socket = new Socket(hostIP, port); //소켓생성
+                    if (socket.isConnected() && !socket.isClosed()) {
+                        thisActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(thisActivity, "서버와 연결되었습니다.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+                        outputStream = new ObjectOutputStream(socket.getOutputStream());
+                        out = new PrintWriter(outputStream);//전송한다.
+                        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                    } else {
+                        thisActivity.runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                Toast.makeText(thisActivity, "연결에 실패하였습니다.", Toast.LENGTH_LONG).show();
+                            }
+                        });
+
+                    }
+                }
+                //데이터 수신시 stream을 받아들인다.
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                while (true) {
+                    data = in.readLine();
+                    if(data != null){
+                        switch(data.charAt(0)){
+                            case 'm':
+                                arduinoMacAddr = data.substring(1);
+                                break;
+                        }
+
+                    }
+                }
+            } catch (Exception e) {
+            }
+
+        }
+    }
+    Handler handler = new Handler();
 
 }
 
